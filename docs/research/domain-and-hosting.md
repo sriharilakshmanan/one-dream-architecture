@@ -2,6 +2,16 @@
 
 For [Task: buy the domain](https://github.com/sriharilakshmanan/one-dream-architecture/issues/8). Researched on 2026-11-15, and every price was checked that day. Prices are in USD per year unless stated otherwise.
 
+## Decisions (2026-11-15)
+
+The user answered the open questions below. Where these differ from the TL;DR, these win.
+
+- **Domain:** `onedreamarchitecture.com` only. No `.in`.
+- **Ownership:** the Firm creates the Cloudflare account, turns on 2FA, and buys the domain with its own card. That makes the Firm the registrant (the legal owner) and puts renewals on its billing. The Firm invites the repo owner as an **Administrator** member to set up DNS, Pages and Email Routing. Administrator can't edit billing ([roles](https://developers.cloudflare.com/fundamentals/manage-members/roles/)). The roles page doesn't say which role controls Registrar settings or Email Routing; if Administrator hits a wall, the Firm raises the member to Super Administrator. The Firm keeps auto-renew on and the card current.
+- **Hosting:** the target is **$0**, and staff don't need draft previews, so the site is a **static export on Cloudflare Pages**. The free plan allows 500 builds/month, 1 build at a time and 20,000 files per site ([limits](https://developers.cloudflare.com/pages/platform/limits/)). Prismic triggers a rebuild on publish through a deploy hook. Vercel is out. Still unverified: whether Cloudflare's free plan allows commercial use.
+- **Email:** forwarding only, through Cloudflare Email Routing, which is free ([docs](https://developers.cloudflare.com/email-routing/)). It receives and forwards mail but doesn't send it. No mailbox for now.
+- **Later handover, if ever needed:** a Registrar domain can move between Cloudflare accounts. The domain must be more than 10 days old, DNSSEC must be off and the registrant email verified, and the receiving account must accept within 5 days. DNS settings don't carry over, and the domain is transfer-locked for 30 days after the move ([docs](https://developers.cloudflare.com/registrar/account-options/inter-account-transfer/)).
+
 ## TL;DR
 
 1. **Register `onedreamarchitecture.com` at Cloudflare Registrar.** It was unregistered on 2026-11-15 (`whois`: "No match"; [Vercel availability API](https://api.vercel.com/v1/registrar/domains/onedreamarchitecture.com/availability) returned `{"available":true}`). Cloudflare sells at cost, with no markup on renewal ([cloudflare.com/products/registrar](https://www.cloudflare.com/products/registrar/)), about **$10.46/yr** ([cfdomainpricing.com](https://cfdomainpricing.com/), a third-party tracker; the official price only appears at checkout). It also includes free WHOIS redaction, one-click DNSSEC and hardware-key 2FA.
@@ -82,15 +92,11 @@ Cloudflare has the lowest .com renewal price and hardware-key 2FA, and gives DNS
 
 **Decision rule:** if the Firm's editors need to preview a draft page before publishing, run Next.js on a server runtime: Vercel Pro, or Netlify/Cloudflare to save the $20. If publishing and waiting a minute for a rebuild is fine, use a static export on Cloudflare at $0 next to the DNS.
 
-## Open questions for the user
+## Open questions
 
-1. **Which name and TLD did the Firm pick?** I assumed `onedreamarchitecture.com`, which is available along with `.in` (2026-11-15). `onedreamarchitects.com` is taken (Hostinger, since 2022).
-2. Buy `.in` too, as a redirect (about $7.83/yr at Porkbun)?
-3. Will the proprietor create and own the Cloudflare account (yes is recommended), or is the repo owner holding it in trust?
-4. Must staff preview drafts before publishing? This decides server runtime vs static export (Q4) and is an input to the stack/CMS decision.
-5. Is $20/mo for Vercel Pro acceptable, or is the target $0 hosting?
-6. Do you want a real mailbox on the domain (Workspace ₹270 per user per month vs Zoho), or just forwarding?
-7. For the demo ([#21](https://github.com/sriharilakshmanan/one-dream-architecture/issues/21)): can webinar.gg send email from the Firm's domain (custom DKIM/SPF), and can the registration page sit on a subdomain (e.g. `webinars.<domain>`)?
+Questions 1–6 are answered under **Decisions** above. One question remains:
+
+- For the demo ([#21](https://github.com/sriharilakshmanan/one-dream-architecture/issues/21)): can webinar.gg send email from the Firm's domain (custom DKIM/SPF), and can the registration page sit on a subdomain (e.g. `webinars.<domain>`)?
 
 ## Unverified or blocked
 
