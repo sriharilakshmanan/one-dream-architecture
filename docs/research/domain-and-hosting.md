@@ -8,7 +8,7 @@ The user answered the open questions below. Where these differ from the TL;DR, t
 
 - **Domain:** `onedreamarchitecture.com` only. No `.in`.
 - **Ownership:** the Firm creates the Cloudflare account, turns on 2FA, and buys the domain with its own card. That makes the Firm the registrant (the legal owner) and puts renewals on its billing. The Firm invites the repo owner as an **Administrator** member to set up DNS, Pages and Email Routing. Administrator can't edit billing ([roles](https://developers.cloudflare.com/fundamentals/manage-members/roles/)). The roles page doesn't say which role controls Registrar settings or Email Routing; if Administrator hits a wall, the Firm raises the member to Super Administrator. The Firm keeps auto-renew on and the card current.
-- **Hosting:** the target is **$0**, and staff don't need draft previews, so the site is a **static export on Cloudflare Pages**. The free plan allows 500 builds/month, 1 build at a time and 20,000 files per site ([limits](https://developers.cloudflare.com/pages/platform/limits/)). Prismic triggers a rebuild on publish through a deploy hook. Vercel is out. Still unverified: whether Cloudflare's free plan allows commercial use.
+- **Hosting:** the target is **$0**, and staff don't need draft previews, so the site is a **static export on Cloudflare Pages**. The free plan allows 500 builds/month, 1 build at a time and 20,000 files per site ([limits](https://developers.cloudflare.com/pages/platform/limits/)). Prismic triggers a rebuild on publish through a deploy hook. Vercel is out. **Commercial use is allowed:** Cloudflare's [Terms](https://www.cloudflare.com/terms/) (§2.2.1, §2.6) and the [Developer Platform terms](https://www.cloudflare.com/service-specific-terms-developer-platform/) contain no personal or non-commercial restriction on Free plans. The only Free-specific restriction is §2.2.1(h): no collecting payment card details on the site, and that doesn't apply because webinar.gg takes payments.
 - **Email:** forwarding only, through Cloudflare Email Routing, which is free ([docs](https://developers.cloudflare.com/email-routing/)). It receives and forwards mail but doesn't send it. No mailbox for now.
 - **Later handover, if ever needed:** a Registrar domain can move between Cloudflare accounts. The domain must be more than 10 days old, DNSSEC must be off and the registrant email verified, and the receiving account must accept within 5 days. DNS settings don't carry over, and the domain is transfer-locked for 30 days after the move ([docs](https://developers.cloudflare.com/registrar/account-options/inter-account-transfer/)).
 
@@ -104,7 +104,7 @@ Questions 1–6 are answered under **Decisions** above. One question remains:
 - Cloudflare's .com price comes from a third-party tracker. Cloudflare only shows prices at checkout.
 - Porkbun .in WHOIS privacy (its own pages contradict each other).
 - Meta business-verification website requirements (the help page needs JavaScript).
-- Netlify and Cloudflare free-plan commercial-use terms (I didn't read their ToS).
+- Netlify free-plan commercial-use terms (I didn't read its ToS). Cloudflare is resolved: commercial use is allowed (see Decisions).
 - NIXI's .in transfer rules come from registrars' docs, not NIXI itself.
 - The effective date of ICANN's 30-day transfer-lock revision.
 
