@@ -1,0 +1,194 @@
+<!doctype html>
+<!-- PROTOTYPE, throwaway. Logo directions for the "Prototype: logo refinements" ticket (#23). Not production. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logo prototype</title>
+<link rel="icon" id="fav">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500&family=League+Spartan:wght@400;600&family=Outfit:wght@300;500&family=Josefin+Sans:wght@400;600&display=swap">
+<style>
+  :root { --light:#ECEAE3; --ink:#232B32; --d:#5F7485; --o:#A65A3A; --font:Jost; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--light); color:var(--ink); font:15px/1.5 system-ui, sans-serif; padding:32px 16px 120px; }
+  main { max-width:1100px; margin:0 auto; }
+  h1 { font:500 22px/1.3 var(--font); margin:0 0 4px; }
+  .note { margin:0 0 28px; max-width:70ch; opacity:.8; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr)); gap:16px; }
+  .panel { border-radius:6px; padding:24px; min-height:220px; display:flex; flex-direction:column; gap:16px; justify-content:space-between; }
+  .panel.light { background:var(--light); outline:1px solid color-mix(in srgb, var(--ink) 15%, transparent); }
+  .panel.dark { background:var(--ink); color:var(--light); }
+  .panel.white { background:#fff; color:#000; outline:1px solid #ddd; }
+  .panel.black { background:#000; color:#fff; }
+  .cap { font-size:13px; opacity:.7; margin:0; }
+  .row { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .px { image-rendering:pixelated; }
+  .avatar { width:96px; height:96px; border-radius:50%; display:grid; place-items:center; overflow:hidden; }
+  .word { font-family:var(--font); line-height:1.05; }
+  .word b { display:block; font-weight:var(--wb); }
+  .word span { display:block; font-weight:var(--wl); }
+  .horiz { display:flex; align-items:center; gap:12px; }
+  .horiz .word b { font-size:21px; } .horiz .word span { font-size:15px; letter-spacing:.02em; }
+  .stack { display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center; }
+  .stack .word b { font-size:30px; } .stack .word span { font-size:21px; letter-spacing:.03em; }
+  .contrast { font-size:13px; }
+  .contrast .fail { color:#b3261e; font-weight:600; }
+  .dark .contrast .fail { color:#ffb4ab; }
+  nav { position:fixed; left:50%; bottom:16px; transform:translateX(-50%); display:flex; gap:6px; flex-wrap:wrap; justify-content:center;
+        background:#fff; color:#111; padding:8px; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,.18); max-width:calc(100% - 32px); }
+  nav button { font:inherit; font-size:14px; border:0; background:none; padding:6px 10px; border-radius:5px; cursor:pointer; color:inherit; }
+  nav button[aria-pressed=true] { background:#111; color:#fff; }
+  nav button:focus-visible { outline:2px solid #2a6df4; outline-offset:2px; }
+  nav i { width:1px; background:#ddd; margin:0 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title"></h1>
+  <p class="note" id="desc"></p>
+  <div class="grid" id="grid"></div>
+</main>
+<nav id="bar"></nav>
+<script>
+const PALETTES = {
+  F: { name:'F. Slate & Terracotta',      light:'#ECEAE3', ink:'#232B32', d:'#5F7485', o:'#A65A3A' },
+  D: { name:'D. Eucalyptus & Terracotta', light:'#E4E0D6', ink:'#1F2E2A', d:'#7E9C8F', o:'#A65A3A' },
+  E: { name:'E. Slate & Ochre',           light:'#E8DCC8', ink:'#1F2A33', d:'#5F7485', o:'#C8963E' },
+};
+// w: slab width, rD/rO: D and O radii, gap: space between pieces, R: corner radius. Units: ~100 = Mark height.
+const DIRECTIONS = {
+  1: { name:'Faithful', w:30, rD:17, rO:11, gap:0, R:4, font:'Jost', wb:500, wl:400,
+       desc:'The current Mark redrawn as-is: pieces touching, softly rounded slab. Wordmark in Jost.' },
+  2: { name:'Cut', w:30, rD:17, rO:11, gap:3, R:0, font:'League Spartan', wb:600, wl:400,
+       desc:'Sharp, exact geometry with an even gap between pieces, so the A, D and O stay separate in one colour. Wordmark in League Spartan.' },
+  3: { name:'Soft', w:30, rD:17, rO:11, gap:2.5, R:7, font:'Outfit', wb:500, wl:300,
+       desc:'Generous rounding on every corner, small gaps. Wordmark in Outfit.' },
+  4: { name:'Small-size first', w:25, rD:21, rO:14, gap:3.5, R:3, font:'Josefin Sans', wb:600, wl:400,
+       desc:'A slimmer slab and bigger D and O, so the D and O stay legible at 16px. Wordmark in Josefin Sans.' },
+};
+
+const u = [0.53, 0.848], n = [0.848, -0.53]; // slab direction, and its normal pointing into the slab
+const add = (p, v, k=1) => [p[0] + v[0]*k, p[1] + v[1]*k];
+const f = x => +x.toFixed(2);
+
+function geometry({ w, rD, rO, gap }) {
+  const A = [42, 4], base = 92;
+  const TL = add(A, n, -w);
+  const BR = add(A, u, (base - A[1]) / u[1]);
+  const BL = add(TL, u, (base - TL[1]) / u[1]);
+  const My = base - u[1]*rD;
+  const M = [TL[0] + (-(rD + gap) + (My - TL[1]) * -n[1]) / n[0], My];
+  const Cy = base - rO;
+  const C = [M[0] + (-(rO + gap) + (Cy - M[1]) * -n[1]) / n[0], Cy];
+  return { slab:[A, BR, BL, TL], M, C };
+}
+
+// Inset a convex polygon by R (so a round-joined stroke of width 2R restores the outer edge).
+function inset(pts, R) {
+  if (!R) return pts;
+  const lines = pts.map((p, i) => {
+    const q = pts[(i+1) % pts.length], dx = q[0]-p[0], dy = q[1]-p[1], L = Math.hypot(dx, dy);
+    const nx = -dy/L, ny = dx/L; // clockwise polygon in screen coords: this normal points inward
+    return [[p[0]+nx*R, p[1]+ny*R], [dx, dy]];
+  });
+  return lines.map((l, i) => {
+    const [p, d] = lines[(i - 1 + lines.length) % lines.length], [q, e] = l;
+    const t = ((q[0]-p[0])*e[1] - (q[1]-p[1])*e[0]) / (d[0]*e[1] - d[1]*e[0]);
+    return [p[0] + d[0]*t, p[1] + d[1]*t];
+  });
+}
+
+function markSVG(dir, colors, size) {
+  const g = geometry(dir), R = dir.R;
+  const slab = inset(g.slab, R).map(p => p.map(f).join(' ')).join(' L');
+  const Mi = add(g.M, n, R), r = dir.rD - R;
+  const d1 = add(Mi, u, -r).map(f), d2 = add(Mi, u, r).map(f);
+  const minX = g.C[0] - dir.rO, maxX = g.slab[1][0], pad = 4;
+  const span = Math.max(maxX - minX, 92 - 4) + pad*2;
+  const vx = (minX + maxX)/2 - span/2, vy = 48 - span/2;
+  const st = c => R ? `fill="${c}" stroke="${c}" stroke-width="${2*R}" stroke-linejoin="round"` : `fill="${c}"`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${f(vx)} ${f(vy)} ${f(span)} ${f(span)}" width="${size}" height="${size}" role="img" aria-label="One Dream Architecture mark">
+<path ${st(colors.a)} d="M${slab} Z"/>
+<path ${st(colors.d)} d="M${d1.join(' ')} A${f(r)} ${f(r)} 0 0 1 ${d2.join(' ')} Z"/>
+<circle fill="${colors.o}" cx="${f(g.C[0])}" cy="${f(g.C[1])}" r="${dir.rO}"/>
+</svg>`;
+}
+
+// WCAG contrast
+const lum = hex => { const c = hex.match(/\w\w/g).map(h => { const v = parseInt(h,16)/255; return v <= .03928 ? v/12.92 : ((v+.055)/1.055)**2.4; });
+  return .2126*c[0] + .7152*c[1] + .0722*c[2]; };
+const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + .05) / (y + .05); };
+const contrastLine = (cols, ground) => ['A','D','O'].map((k, i) => {
+  const r = ratio([cols.a, cols.d, cols.o][i], ground);
+  return `${k} <span class="${r < 3 ? 'fail' : ''}">${r.toFixed(2)}:1</span>`;
+}).join('&nbsp;&nbsp; ');
+
+function pixel(svg, px, scale) { // render at true device pixels, then show magnified
+  const c = document.createElement('canvas'); c.width = c.height = px;
+  c.className = 'px'; c.style.width = c.style.height = px*scale/devicePixelRatio + 'px';
+  const img = new Image();
+  img.onload = () => c.getContext('2d').drawImage(img, 0, 0, px, px);
+  img.src = 'data:image/svg+xml,' + encodeURIComponent(svg);
+  return c;
+}
+
+function wordmark() { return `<div class="word"><b>One Dream</b><span>Architecture</span></div>`; }
+
+function panel(cls, caption, ground, cols, dir) {
+  const el = document.createElement('section');
+  el.className = 'panel ' + cls;
+  el.innerHTML = `
+    <div class="stack">${markSVG(dir, cols, 120)}${wordmark()}</div>
+    <div class="horiz">${markSVG(dir, cols, 44)}${wordmark()}</div>
+    <div class="row" data-sizes>
+      <div class="avatar" style="background:${ground}">${markSVG(dir, cols, 64)}</div>
+      ${markSVG(dir, cols, 32)} ${markSVG(dir, cols, 16)}
+    </div>
+    <p class="cap">${caption}</p>
+    <p class="contrast">Contrast vs ground (3:1 needed): ${contrastLine(cols, ground)}</p>`;
+  const sizes = el.querySelector('[data-sizes]');
+  const fav = markSVG(dir, cols, 16);
+  const lbl = document.createElement('span'); lbl.className = 'cap'; lbl.textContent = '16px, magnified 4×:';
+  sizes.append(lbl, pixel(fav, 16, 4));
+  return el;
+}
+
+const params = new URLSearchParams(location.search);
+let state = { d: params.get('d') in DIRECTIONS ? params.get('d') : '1', p: params.get('p') in PALETTES ? params.get('p') : 'F' };
+
+function render() {
+  const dir = DIRECTIONS[state.d], p = PALETTES[state.p], root = document.documentElement.style;
+  root.setProperty('--light', p.light); root.setProperty('--ink', p.ink);
+  root.setProperty('--font', `'${dir.font}'`); root.setProperty('--wb', dir.wb); root.setProperty('--wl', dir.wl);
+  document.getElementById('title').textContent = `${state.d}. ${dir.name}, in ${p.name}`;
+  document.getElementById('desc').textContent = dir.desc;
+  const grid = document.getElementById('grid'); grid.innerHTML = '';
+  grid.append(
+    panel('light', 'Light ground', p.light, { a:p.ink, d:p.d, o:p.o }, dir),
+    panel('dark', 'Dark ground (slab flips to the light colour)', p.ink, { a:p.light, d:p.d, o:p.o }, dir),
+    panel('white', 'One colour: black on white', '#ffffff', { a:'#000000', d:'#000000', o:'#000000' }, dir),
+    panel('black', 'One colour: white on black', '#000000', { a:'#ffffff', d:'#ffffff', o:'#ffffff' }, dir),
+  );
+  document.getElementById('fav').href = 'data:image/svg+xml,' + encodeURIComponent(markSVG(dir, { a:p.ink, d:p.d, o:p.o }, 32));
+  history.replaceState(null, '', `?d=${state.d}&p=${state.p}`);
+  bar();
+}
+
+function bar() {
+  const nav = document.getElementById('bar'); nav.innerHTML = '';
+  const btn = (label, on, fn) => { const b = document.createElement('button'); b.textContent = label;
+    b.setAttribute('aria-pressed', on); b.onclick = fn; nav.append(b); };
+  for (const k in DIRECTIONS) btn(`${k}. ${DIRECTIONS[k].name}`, k === state.d, () => { state.d = k; render(); });
+  nav.append(document.createElement('i'));
+  for (const k in PALETTES) btn(k, k === state.p, () => { state.p = k; render(); });
+}
+
+addEventListener('keydown', e => {
+  const ks = Object.keys(DIRECTIONS), i = ks.indexOf(state.d);
+  if (e.key === 'ArrowRight') { state.d = ks[(i + 1) % ks.length]; render(); }
+  if (e.key === 'ArrowLeft')  { state.d = ks[(i - 1 + ks.length) % ks.length]; render(); }
+});
+render();
+</script>
+</body>
+</html>
