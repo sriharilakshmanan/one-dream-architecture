@@ -1,0 +1,74 @@
+/* One Dream Architecture: design tokens v1.0 */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap");
+
+:root {
+  /* Brand palette */
+  --oda-limewash:            #ECEAE3; /* light ground */
+  --oda-ink:                 #232B32; /* dark ground; slab on light */
+  --oda-slate:               #5F7485; /* the D, on light grounds */
+  --oda-slate-on-dark:       #788D9D; /* the D, on dark grounds (4.17:1 on ink) */
+  --oda-terracotta:          #A65A3A; /* the O, on light grounds; logo only */
+  --oda-terracotta-on-dark:  #BC6C4A; /* the O, on dark grounds (3.68:1 on ink); logo only */
+  --oda-mushroom:            #B8AA99; /* supporting */
+
+  /* Derived tints (website only, never in the logo) */
+  --oda-limewash-deep:       #DEDAD0; /* subtle surface on light */
+  --oda-ink-raised:          #2C3640; /* subtle surface on dark */
+  --oda-slate-deep:          #4E5C68; /* muted text on light (5.71:1) */
+
+  /* Roles: light theme */
+  --color-bg:            var(--oda-limewash);
+  --color-bg-subtle:     var(--oda-limewash-deep);
+  --color-text:          var(--oda-ink);         /* 11.92:1 */
+  --color-text-muted:    var(--oda-slate-deep);  /* 5.71:1 */
+  --color-border:        var(--oda-mushroom);    /* dividers only (decorative) */
+  --color-border-strong: var(--oda-slate);       /* inputs, controls: 4.03:1 */
+  --color-focus:         var(--oda-slate);
+  --color-action-bg:     var(--oda-ink);         /* primary button */
+  --color-action-text:   var(--oda-limewash);
+  --color-link:          var(--oda-ink);         /* always underlined */
+
+  /* Logo colours: switch with the ground, never chosen by hand */
+  --logo-slab: var(--oda-ink);
+  --logo-d:    var(--oda-slate);
+  --logo-o:    var(--oda-terracotta);
+
+  /* Type */
+  --font-brand: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --weight-light: 300;   /* "Architecture" in the wordmark; large lead text */
+  --weight-regular: 400; /* body */
+  --weight-medium: 500;  /* "One Dream" in the wordmark; headings */
+  --weight-semibold: 600;/* buttons, labels */
+
+  /* Type scale: 1.25 (major third), 16px base */
+  --text-display: 3.815rem; /* 61px  lh 1.05  tracking -0.02em  500 */
+  --text-h1:      3.052rem; /* 49px  lh 1.1   tracking -0.015em 500 */
+  --text-h2:      2.441rem; /* 39px  lh 1.15  tracking -0.01em  500 */
+  --text-h3:      1.953rem; /* 31px  lh 1.2   tracking -0.005em 500 */
+  --text-h4:      1.563rem; /* 25px  lh 1.3   500 */
+  --text-lead:    1.25rem;  /* 20px  lh 1.5   300 */
+  --text-body:    1rem;     /* 16px  lh 1.6   400 */
+  --text-small:   0.875rem; /* 14px  lh 1.5   400 */
+  --text-label:   0.75rem;  /* 12px  lh 1.4   600  tracking 0.06em  uppercase */
+}
+
+@media (max-width: 640px) {
+  :root { --text-display: 2.441rem; --text-h1: 2.074rem; --text-h2: 1.728rem; --text-h3: 1.44rem; --text-h4: 1.2rem; }
+}
+
+[data-theme="dark"] {
+  --color-bg:            var(--oda-ink);
+  --color-bg-subtle:     var(--oda-ink-raised);
+  --color-text:          var(--oda-limewash);    /* 11.92:1 */
+  --color-text-muted:    var(--oda-mushroom);    /* 6.32:1 */
+  --color-border:        #3E4A55;                /* dividers only */
+  --color-border-strong: var(--oda-slate-on-dark);
+  --color-focus:         var(--oda-slate-on-dark);
+  --color-action-bg:     var(--oda-limewash);
+  --color-action-text:   var(--oda-ink);
+  --color-link:          var(--oda-limewash);
+
+  --logo-slab: var(--oda-limewash);
+  --logo-d:    var(--oda-slate-on-dark);
+  --logo-o:    var(--oda-terracotta-on-dark);
+}
