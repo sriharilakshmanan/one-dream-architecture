@@ -13,6 +13,7 @@
   * { box-sizing:border-box; }
   body { margin:0; background:var(--color-bg); color:var(--color-text); font:var(--weight-regular) var(--text-body)/1.6 var(--font-brand); padding-bottom:96px; }
   img { display:block; max-width:100%; }
+  [id] { scroll-margin-top:16px; }
   a { color:var(--color-link); }
   h1,h2,h3,h4 { font-weight:var(--weight-medium); margin:0; }
   p { margin:0; }
@@ -243,7 +244,23 @@ const V = {
       <div class="masonry">${P.map(p => `<a href="#">${ph(p)}<div class="cap"><span>${p.n}</span><span class="muted">${p.yr}</span></div></a>`).join('')}</div>
       <footer><span>One Dream Architecture, Chennai</span><span>hello@example.com · Instagram</span></footer>
     </div>` },
+
+  // D: the Firm's pick. One page: B's header and hero, A's project list, C's dark ground. Nav links scroll to sections.
+  D: { name:'Mix: B hero + A projects, dark', dark:true, cls:'vA vB', home: () => `
+    <div class="wrap">
+      <header>${logo(true)}<nav class="site">${[['Projects','projects'],['Services','services'],['About','about'],['Webinars','webinars'],['Contact','contact']].map(([x, id]) => `<a href="#${id}">${x}</a>`).join('')}</nav></header>
+      <section class="hero" id="about"><h1>Homes built <em>around</em> light, air <em>and</em> the people in them.</h1>
+        <div class="side"><p class="muted">An architecture practice in Chennai designing contemporary houses and interiors.</p><a class="btn" href="#contact">Start a project</a></div></section>
+      <section id="projects"><h2 class="ptitle">Projects</h2>
+        <div class="plist">${P.map((p, i) => `<a href="#" style="text-decoration:none;${i % 2 ? 'margin-left:auto;' : ''}max-width:${p.r === '16/9' || p.r === '3/2' ? '100%' : '62%'};width:100%">
+          ${ph(p, 'lead photo')}<div class="meta"><h3>${p.n}</h3><span class="muted">${p.loc} · ${p.yr}</span></div></a>`).join('')}</div></section>
+      <section class="sec" id="services" style="border-top:var(--rule)"><p class="label">Services</p><div class="svc">${S.map(([h, d], i) => `<div><p class="num">0${i + 1}</p><h3>${h}</h3><p class="muted">${d}</p></div>`).join('')}</div></section>
+      <section class="sec"><p class="label">Clients</p><div><p style="font-size:var(--text-h3);font-weight:300;line-height:1.3;max-width:28ch">“${Q.q}”</p><p class="muted" style="margin-top:12px">${Q.who}</p></div></section>
+      <section class="sec" id="webinars"><p class="label">Webinars</p><table><tbody>${W.map(w => `<tr><td class="num" style="width:120px">${w.d}</td><td>${w.n}</td><td class="hide-s num">${w.price}</td><td style="text-align:right"><a href="#">Book on webinar.gg →</a></td></tr>`).join('')}</tbody></table></section>
+      <footer id="contact"><span>One Dream Architecture · Chennai</span><span>hello@example.com · Instagram</span></footer>
+    </div>` },
 };
+V.D.projects = V.D.home; // one page: "Projects" just scrolls
 
 const keys = Object.keys(V);
 const q = new URLSearchParams(location.search);
@@ -254,13 +271,14 @@ function render() {
   const d = V[v];
   document.documentElement.dataset.theme = d.dark ? 'dark' : 'light';
   const app = document.getElementById('app');
-  app.className = 'v' + v;
+  app.className = d.cls || 'v' + v;
   app.innerHTML = d[page]();
   document.getElementById('lbl').textContent = `${v} (${d.name})`;
   document.querySelectorAll('#proto [data-page]').forEach(b => b.setAttribute('aria-pressed', b.dataset.page === page));
   history.replaceState(null, '', `?v=${v}&page=${page}`);
   document.title = `${v} ${d.name} · ${page} · prototype`;
-  scrollTo(0, 0);
+  const target = v === 'D' && page === 'projects' && document.getElementById('projects');
+  target ? target.scrollIntoView() : scrollTo(0, 0);
 }
 const step = (n) => { v = keys[(keys.indexOf(v) + n + keys.length) % keys.length]; render(); };
 document.getElementById('prev').onclick = () => step(-1);
@@ -273,9 +291,12 @@ document.addEventListener('keydown', e => {
 document.addEventListener('click', e => {
   const pg = e.target.closest('[data-page]'); if (pg) { page = pg.dataset.page; render(); return; }
   const go = e.target.closest('[data-go]'); if (go && go.dataset.go) { e.preventDefault(); page = go.dataset.go; render(); return; }
-  if (e.target.closest('#app a')) e.preventDefault();
   const f = e.target.closest('.vB .filters button');
   if (f) f.parentNode.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b === f));
+  const a = e.target.closest('#app a'); if (!a) return;
+  e.preventDefault();
+  const id = a.getAttribute('href').slice(1);
+  if (id) document.getElementById(id)?.scrollIntoView({ behavior:'smooth' });
 });
 document.addEventListener('mouseover', e => {
   const r = e.target.closest('.vB tr.row[data-i]'); const pv = document.getElementById('pv');
